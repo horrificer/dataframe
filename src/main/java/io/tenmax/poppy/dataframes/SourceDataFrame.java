@@ -1,17 +1,14 @@
 package io.tenmax.poppy.dataframes;
 
-import io.tenmax.poppy.DataColumn;
 import io.tenmax.poppy.DataRow;
 import io.tenmax.poppy.DataSource;
 
 import java.util.Iterator;
 
-public class SourceDataFrame extends BaseDataFrame{
+public class SourceDataFrame extends BaseDataFrame {
     private final DataSource dataSource;
 
-    public <T> SourceDataFrame(
-            DataSource<T> dataSource)
-    {
+    public <T> SourceDataFrame(DataSource<T> dataSource) {
         super(new ExecutionContext(), dataSource.getColumns());
         this.dataSource = dataSource;
     }

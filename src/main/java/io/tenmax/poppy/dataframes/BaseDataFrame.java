@@ -19,7 +19,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-abstract public class BaseDataFrame implements DataFrame{
+abstract public class BaseDataFrame implements DataFrame {
     protected final ExecutionContext context;
     protected final DataColumn[] columns;
     protected final HashMap<String, Integer> columnsMap;
@@ -31,7 +31,7 @@ abstract public class BaseDataFrame implements DataFrame{
         this.columnsMap = new HashMap<>();
 
         int i = 0;
-        for (DataColumn column: columns) {
+        for (DataColumn column : columns) {
             columnsMap.put(column.getName(), i++);
         }
     }
@@ -44,7 +44,7 @@ abstract public class BaseDataFrame implements DataFrame{
     @Override
     public DataColumn getColumn(String name) {
         Integer index = columnsMap.get(name);
-        if(index == null) {
+        if (index == null) {
             throw new ColumnNotFoundException(name);
         }
 
@@ -70,7 +70,7 @@ abstract public class BaseDataFrame implements DataFrame{
     public DataFrame groupby(String... groupedColumns) {
         DataColumn[] gc = new DataColumn[groupedColumns.length];
 
-        for (int i=0; i<groupedColumns.length; i++) {
+        for (int i = 0; i < groupedColumns.length; i++) {
             gc[i] = getColumn(groupedColumns[i]);
         }
         this.groupedColumns = gc;
@@ -86,7 +86,7 @@ abstract public class BaseDataFrame implements DataFrame{
     @Override
     public DataFrame sort(String... columns) {
         SortSpec[] specs = new SortSpec[columns.length];
-        for (int i=0; i<columns.length; i++) {
+        for (int i = 0; i < columns.length; i++) {
             specs[i] = new SortSpec(columns[i], SortSpec.Order.ASC);
         }
         return sort(specs);
@@ -125,7 +125,7 @@ abstract public class BaseDataFrame implements DataFrame{
 
     @Override
     public void print() {
-        Arrays.stream(columns).forEach(column ->{
+        Arrays.stream(columns).forEach(column -> {
             System.out.printf("%s\t", column.getName());
         });
         System.out.println();
@@ -170,15 +170,15 @@ abstract public class BaseDataFrame implements DataFrame{
         int partitionCount = getPartitionCount();
         CompletableFuture[] futures = new CompletableFuture[partitionCount];
 
-        for (int i=0; i<partitionCount; i++) {
+        for (int i = 0; i < partitionCount; i++) {
             final int fi = i;
             futures[i] =
-            CompletableFuture.runAsync(() -> {
-                Iterator<DataRow> partition = getPartition(fi);
-                while (partition.hasNext()) {
-                    consumer.accept(fi, partition.next());
-                }
-            }, executorService);
+                    CompletableFuture.runAsync(() -> {
+                        Iterator<DataRow> partition = getPartition(fi);
+                        while (partition.hasNext()) {
+                            consumer.accept(fi, partition.next());
+                        }
+                    }, executorService);
         }
 
         CompletableFuture<Void> future = CompletableFuture.allOf(futures);
@@ -196,20 +196,20 @@ abstract public class BaseDataFrame implements DataFrame{
         CompletableFuture[] futures = new CompletableFuture[partitionCount];
 
         AtomicInteger counter = new AtomicInteger();
-        for (int i=0; i<partitionCount; i++) {
+        for (int i = 0; i < partitionCount; i++) {
             final int fi = i;
             futures[i] =
-            CompletableFuture.runAsync(() -> {
-                sink.partitionStart(fi);
+                    CompletableFuture.runAsync(() -> {
+                        sink.partitionStart(fi);
 
-                Iterator<DataRow> partition = getPartition(fi);
-                while (partition.hasNext()) {
-                    sink.partitionRow(fi, partition.next());
-                }
+                        Iterator<DataRow> partition = getPartition(fi);
+                        while (partition.hasNext()) {
+                            sink.partitionRow(fi, partition.next());
+                        }
 
-                sink.partitionComplete(fi);
+                        sink.partitionComplete(fi);
 
-            }, executorService);
+                    }, executorService);
         }
 
         CompletableFuture<Void> future = CompletableFuture.allOf(futures);
@@ -225,7 +225,7 @@ abstract public class BaseDataFrame implements DataFrame{
 
         for (DataRow row : this) {
             List data = new ArrayList();
-            for (int i=0; i<columns.length; i++) {
+            for (int i = 0; i < columns.length; i++) {
                 data.add(row.get(i));
             }
             list.add(data);
@@ -251,9 +251,8 @@ abstract public class BaseDataFrame implements DataFrame{
             }
         } catch (InstantiationException |
                 IllegalAccessException |
-                NoSuchMethodException  |
-                InvocationTargetException e)
-        {
+                NoSuchMethodException |
+                InvocationTargetException e) {
             throw new ReflectionException(e);
         }
 
@@ -273,7 +272,7 @@ abstract public class BaseDataFrame implements DataFrame{
             groupedColumnsSet.add(groupColumn.getName());
         }
 
-        for (int i=0; i<columns.length; i++) {
+        for (int i = 0; i < columns.length; i++) {
             if (groupedColumnsSet.contains(columns[i].getName())) {
                 keyColumns.add(i);
             } else {
@@ -286,11 +285,11 @@ abstract public class BaseDataFrame implements DataFrame{
             List key = new ArrayList();
             List value = new ArrayList();
 
-            for (int i: keyColumns) {
+            for (int i : keyColumns) {
                 key.add(row.get(i));
             }
 
-            for (int i: valueColumns) {
+            for (int i : valueColumns) {
                 value.add(row.get(i));
             }
 
@@ -312,7 +311,7 @@ abstract public class BaseDataFrame implements DataFrame{
             groupedColumnsSet.add(groupColumn.getName());
         }
 
-        for (int i=0; i<columns.length; i++) {
+        for (int i = 0; i < columns.length; i++) {
             if (groupedColumnsSet.contains(columns[i].getName())) {
                 keyColumns.add(i);
             }
@@ -343,7 +342,7 @@ abstract public class BaseDataFrame implements DataFrame{
                 V value = valueClazz.newInstance();
 
 
-                for (int i: keyColumns) {
+                for (int i : keyColumns) {
                     String columnName = columns[i].getName();
 
                     if (keyProps.contains(columnName)) {
@@ -355,7 +354,7 @@ abstract public class BaseDataFrame implements DataFrame{
                     }
                 }
 
-                for (DataColumn column: columns) {
+                for (DataColumn column : columns) {
                     String columnName = column.getName();
 
                     if (valueProps.contains(columnName)) {
@@ -371,9 +370,8 @@ abstract public class BaseDataFrame implements DataFrame{
             }
         } catch (InstantiationException |
                 IllegalAccessException |
-                NoSuchMethodException  |
-                InvocationTargetException e)
-        {
+                NoSuchMethodException |
+                InvocationTargetException e) {
             throw new ReflectionException(e);
         }
 
@@ -412,7 +410,7 @@ abstract public class BaseDataFrame implements DataFrame{
         public String toString() {
             StringBuilder sb = new StringBuilder();
 
-            for (int i=0; i<columns.length; i++) {
+            for (int i = 0; i < columns.length; i++) {
                 sb.append(columns[i].getName() + "=" + get(i) + ",");
             }
 
